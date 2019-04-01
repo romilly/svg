@@ -5,6 +5,7 @@ from xml.etree.ElementTree import Element
 from svg.point import Point
 from svg.transform import Rotation, Translation
 
+
 class Drawable:
     __metaclass__ = ABCMeta
 
@@ -12,11 +13,12 @@ class Drawable:
     def element(self):
         pass
 
+
 class CompositeItem(Drawable):
     __metaclass__ = ABCMeta
 
     def __init__(self):
-        self._children = []
+        self.empty()
 
     def add(self, item):
         self._children.append(item)
@@ -33,6 +35,9 @@ class CompositeItem(Drawable):
 
     def children(self):
         return self._children
+
+    def empty(self):
+        self._children = []
 
 
 class GroupedDrawable(CompositeItem):
@@ -74,7 +79,6 @@ class SimpleItem(Drawable):
     def move_to(self, point):
         self.top_left = point
         return self
-
 
 
 class Rectangle(SimpleItem):
@@ -149,7 +153,7 @@ class Text(SimpleItem):
         self._attributes = attributes
         self.angle = 0
 
-    def element(self):
+    def container(self):
         text = Element('text', x=str(self.top_left.x), y=str(self.top_left.y),
                        style= 'fill:%s;text-anchor:%s;font-size: %dpt' % (self.color, self.anchor, self.size))
         text.text = self.text
