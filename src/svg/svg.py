@@ -153,7 +153,7 @@ class Text(SimpleItem):
         self._attributes = attributes
         self.angle = 0
 
-    def container(self):
+    def element(self):
         text = Element('text', x=str(self.top_left.x), y=str(self.top_left.y),
                        style= 'fill:%s;text-anchor:%s;font-size: %dpt' % (self.color, self.anchor, self.size))
         text.text = self.text
