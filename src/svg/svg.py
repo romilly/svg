@@ -1,4 +1,4 @@
-from abc import abstractmethod, ABCMeta
+from abc import abstractmethod, ABC
 from copy import copy
 from xml.etree.ElementTree import Element
 
@@ -6,17 +6,13 @@ from svg.point import Point
 from svg.transform import Rotation, Translation
 
 
-class Drawable:
-    __metaclass__ = ABCMeta
-
+class Drawable(ABC):
     @abstractmethod
     def element(self):
         pass
 
 
 class CompositeItem(Drawable):
-    __metaclass__ = ABCMeta
-
     def __init__(self):
         self.empty()
 
@@ -50,12 +46,12 @@ class GroupedDrawable(CompositeItem):
         return ' '.join([t.text() for t in self.transformations])
 
     def container(self):
-            group = Element('g')
-            if len(self.transformations) > 0:
-                group.set('transform',self.transformation())
-            if self.opacity != 100:
-                group.set('opacity',str(self.opacity))
-            return group
+        group = Element('g')
+        if len(self.transformations) > 0:
+            group.set('transform', self.transformation())
+        if self.opacity != 100:
+            group.set('opacity', str(self.opacity))
+        return group
 
     def rotate(self, theta, origin=Point(0,0)):
         self.transformations.append(Rotation(theta, origin))
@@ -72,7 +68,7 @@ class GroupedDrawable(CompositeItem):
         return p
 
 
-class SimpleItem(Drawable):
+class SimpleItem(Drawable, ABC):
     def __init__(self, top_left):
         self.top_left = top_left
 
@@ -144,18 +140,25 @@ def horizontal_line(start, length, color='black', stroke_width=1, linecap='butt'
 
 
 class Text(SimpleItem):
-    def __init__(self, text, start, color='black', anchor='start', size=8, **attributes):
+    def __init__(self, text, start, color='black', anchor='start', size=8,
+                 font_weight='normal', font_family=None,  **attributes):
         SimpleItem.__init__(self, start)
         self.text = text
         self.color = color
         self.anchor = anchor
         self.size = size
+        self.font_weight = font_weight
+        self.font_family = font_family
         self._attributes = attributes
         self.angle = 0
 
     def element(self):
+        style = 'fill:%s;text-anchor:%s;font-size: %dpt;font-weight:%s' % \
+                (self.color, self.anchor, self.size, self.font_weight)
+        if self.font_family is not None:
+            style += ';font-family:%s' % self.font_family
         text = Element('text', x=str(self.top_left.x), y=str(self.top_left.y),
-                       style= 'fill:%s;text-anchor:%s;font-size: %dpt' % (self.color, self.anchor, self.size))
+                       style=style)
         text.text = self.text
         if self.angle != 0:
             text.set('transform','rotate(%d,%d,%d)' % (self.angle, self.top_left.x, self.top_left.y))
@@ -181,6 +184,18 @@ class Circle(SimpleItem):
     def move_center_to(self, point):
         self.move_to(point - Point(self.radius, self.radius))
         return self
+
+
+class Image(SimpleItem):
+    def __init__(self, start, file_name, width, height):
+        SimpleItem.__init__(self, start)
+        self.height = height
+        self.width = width
+        self.file_name = file_name
+
+    def element(self):
+        return Element("image", {'xlink:href' : self.file_name}, x=str(self.top_left.x), y=str(self.top_left.y),
+                       width= str(self.width), height=str(self.height))
 
 
 class Dimple(SimpleItem):
