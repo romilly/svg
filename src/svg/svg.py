@@ -76,6 +76,10 @@ class SimpleItem(Drawable, ABC):
         self.top_left = point
         return self
 
+    def move_by(self, point):
+        self.top_left += point
+        return self
+
 
 class Rectangle(SimpleItem):
     def __init__(self, width, height, stroke_width=1, stroke='black', stroke_dasharray=None,rounded=False, **attributes):
