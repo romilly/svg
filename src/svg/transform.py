@@ -1,12 +1,11 @@
-from abc import ABCMeta, abstractmethod
+from abc import ABC, abstractmethod
 
 from svg.point import Point
 from math import sin, cos, radians
 
 
-class Transform():
+class Transform(ABC):
     """Represents an atomic svg transformation - a translation, rotation or scaling"""
-    __metaclass__ = ABCMeta
 
     @abstractmethod
     def text(self):
@@ -36,6 +35,9 @@ class Translation(Transform):
 
 
 class Rotation(Transform):
+    def as_matrix(self):
+        pass
+
     def __init__(self, angle, origin=Point(0, 0)):
         self.angle = angle
         self.origin = origin

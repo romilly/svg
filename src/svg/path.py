@@ -1,5 +1,5 @@
 from _elementtree import Element
-from abc import ABCMeta, abstractmethod
+from abc import ABC, abstractmethod
 
 from svg.point import Point
 from svg.svg import SimpleItem
@@ -26,8 +26,8 @@ class Path(SimpleItem):
         return p
 
 
-class PathSegment():
-    __metaclass__ = ABCMeta
+class PathSegment(ABC):
+
 
     @abstractmethod
     def specification(self):
