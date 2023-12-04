@@ -1,17 +1,18 @@
 from _elementtree import Element
 from abc import ABC, abstractmethod
+from xml.etree.ElementTree import tostring
 
 from svg.point import Point
-from svg.svg import SimpleItem
+from svg.core import SimpleItem
 
 
 
 
 class Path(SimpleItem):
-    def __init__(self, start, *segments, **attributes):
+    def __init__(self, start, closed:bool, *segments, **attributes):
         SimpleItem.__init__(self, start)
         self.segments = segments
-        self.closed = True # can set to false if open path required
+        self.closed = closed # can set to false if open path required
         self._attributes = attributes
 
     def element(self):
@@ -20,6 +21,7 @@ class Path(SimpleItem):
         d += ' '.join([segment.specification() for segment in self.segments])
         if self.closed:
             d += ' Z'
+
         p.set('d', d)
         if 'width' in self._attributes:
             p.set('stroke-width', self._attributes['width'])
