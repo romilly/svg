@@ -63,7 +63,8 @@ class GroupedDrawable(CompositeItem):
 
     def location_of(self, point):
         p = copy(point)
-        for transformation in self.transformations:
+        # SVG's transform="A B" maps a point through B first, then A
+        for transformation in reversed(self.transformations):
             p = transformation.transform(p)
         return p
 
