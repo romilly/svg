@@ -46,9 +46,8 @@ class Rotation(Transform):
         return 'rotate(%f,%f,%f)' % (self.angle, self.origin.x, self.origin.y)
 
     def transform(self, point):
-        p = point
+        # rotate about self.origin, as SVG's rotate(angle, cx, cy) does
+        p = point - self.origin
         s = sin(radians(-self.angle))
         c = cos(radians(-self.angle))
-        point1 = Point(c*p.x + s * p.y, (c*p.y - s*p.x))
-        result = point1
-        return result
+        return Point(c*p.x + s * p.y, (c*p.y - s*p.x)) + self.origin
