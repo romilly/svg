@@ -1,4 +1,4 @@
-from _elementtree import Element
+from xml.etree.ElementTree import Element
 from abc import ABC, abstractmethod
 from xml.etree.ElementTree import tostring
 
